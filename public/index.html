@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CodeArena Online Judge</title>
+  <meta name="description" content="CodeArena — solve algorithmic problems, compete in rated contests and track your progress across online judges.">
+  <link rel="icon" href="/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="/vendor/codemirror/lib/codemirror.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <script src="/js/theme.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="/" class="brand" aria-label="CodeArena home">
+        <img src="/img/logo.svg" alt="" width="28" height="28">
+        <span>Code<b>Arena</b></span>
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">☰</button>
+      <nav class="mainnav" id="mainnav">
+        <a href="/" data-nav="home">Home</a>
+        <a href="/problems" data-nav="problems">Problems</a>
+        <a href="/archive" data-nav="archive">Archive</a>
+        <a href="/contests" data-nav="contests">Contests</a>
+        <a href="/status" data-nav="status">Status</a>
+        <a href="/rankings" data-nav="rankings">Rankings</a>
+        <a href="/run" data-nav="run">IDE</a>
+        <a href="/admin" data-nav="admin" id="navAdmin" hidden>Admin</a>
+      </nav>
+      <div class="topbar-right">
+        <button class="icon-btn" id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode">◐</button>
+        <div id="userbox" class="userbox"></div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="container" tabindex="-1">
+    <div class="loading-page"><span class="spinner"></span></div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>© <span id="year"></span> CodeArena Online Judge</span>
+      <span class="muted" id="serverInfo"></span>
+      <span><a href="/about">About &amp; API</a></span>
+    </div>
+  </footer>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <script src="/vendor/katex/katex.min.js"></script>
+  <script src="/vendor/codemirror/lib/codemirror.js"></script>
+  <script src="/vendor/codemirror/addon/mode/simple.js"></script>
+  <script src="/vendor/codemirror/addon/edit/matchbrackets.js"></script>
+  <script src="/vendor/codemirror/addon/edit/closebrackets.js"></script>
+  <script src="/vendor/codemirror/mode/clike/clike.js"></script>
+  <script src="/vendor/codemirror/mode/python/python.js"></script>
+  <script src="/vendor/codemirror/mode/javascript/javascript.js"></script>
+  <script src="/vendor/codemirror/mode/go/go.js"></script>
+  <script src="/vendor/codemirror/mode/rust/rust.js"></script>
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

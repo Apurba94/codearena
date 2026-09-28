@@ -1,0 +1,50 @@
+# Hardened self-hosted deployment: the web server and the judge are separate containers sharing one
+# SQLite database on a volume. Web runs unprivileged and never executes user code (custom runs are
+# queued to the judge); the judge has no network and runs each submission as its own uid.
+#
+#   cp .env.example .env        # set ADMIN_PASSWORD, SITE_NAME, SECURE_COOKIE=true behind HTTPS
+#   docker compose up -d --build           # first boot seeds problems + imports the archive
+#   docker compose up -d --scale judge=3   # more judging capacity
+
+services:
+  web:
+    build: .
+    image: codearena
+    user: "10001:10001"
+    env_file: .env
+    environment:
+      JUDGE_EMBEDDED: "false"
+    ports:
+      - "3000:3000"
+    volumes:
+      - data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+
+  judge:
+    image: codearena
+    depends_on: [web]
+    command: ["node", "--disable-warning=ExperimentalWarning", "server/judge/worker.js"]
+    user: "0:0"                      # supervisor needs root only to setuid() into SANDBOX_UID + worker
+    env_file: .env
+    environment:
+      JUDGE_WORKERS: "2"
+    volumes:
+      - data:/data
+    tmpfs:
+      - /tmp:size=2g,mode=1777       # compiler scratch + per-run work dirs
+    network_mode: none               # submissions can never reach the network
+    read_only: true
+    cap_drop: [ALL]
+    cap_add: [SETUID, SETGID, KILL, CHOWN, DAC_OVERRIDE, FOWNER]
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 512
+    mem_limit: 4g
+    restart: unless-stopped
+
+volumes:
+  data:

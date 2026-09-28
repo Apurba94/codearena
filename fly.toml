@@ -1,0 +1,36 @@
+# Fly.io: `fly launch --copy-config --no-deploy`, then
+#   fly volumes create codearena_data --size 5
+#   fly secrets set ADMIN_PASSWORD='choose-a-strong-password'
+#   fly deploy
+app = "codearena"              # must be globally unique: change it (e.g. codearena-yourname)
+primary_region = "sin"         # Singapore; pick the region closest to your users (`fly platform regions`)
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  SITE_NAME = "CodeArena"
+  JUDGE_WORKERS = "2"
+
+[[mounts]]
+  source = "codearena_data"
+  destination = "/data"
+  initial_size = "5gb"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "off"   # the judge must keep running
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    grace_period = "180s"      # first boot seeds problems before listening
+    interval = "30s"
+    method = "GET"
+    path = "/api/health"
+    timeout = "5s"
+
+[[vm]]
+  size = "shared-cpu-2x"
+  memory = "2gb"

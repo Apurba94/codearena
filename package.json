@@ -1,0 +1,29 @@
+{
+  "name": "codearena",
+  "version": "1.0.0",
+  "description": "CodeArena - a full-featured online judge (problems, contests, ratings, judge workers, multi-OJ problem archive)",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server/index.js",
+    "dev": "node --disable-warning=ExperimentalWarning --watch server/index.js",
+    "judge": "node --disable-warning=ExperimentalWarning server/judge/worker.js",
+    "seed": "node --disable-warning=ExperimentalWarning seed/seed.js",
+    "import": "node --disable-warning=ExperimentalWarning scripts/import-archive.js",
+    "smoke": "node --disable-warning=ExperimentalWarning scripts/smoke-test.js",
+    "demo": "node --disable-warning=ExperimentalWarning scripts/demo-data.js",
+    "verify": "node --disable-warning=ExperimentalWarning scripts/verify-solutions.js",
+    "test": "node --test \"test/*.test.js\""
+  },
+  "license": "MIT",
+  "dependencies": {
+    "codemirror": "^5.65.21",
+    "dompurify": "^3.4.16",
+    "express": "^5.2.1",
+    "katex": "^0.18.9",
+    "marked": "^15.0.12"
+  }
+}

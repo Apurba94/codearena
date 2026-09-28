@@ -1,0 +1,20 @@
+# Render Blueprint: New → Blueprint → select this repository.
+# A persistent disk is required (SQLite + test data), which needs a paid instance type.
+services:
+  - type: web
+    name: codearena
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    disk:
+      name: codearena-data
+      mountPath: /data
+      sizeGB: 5
+    envVars:
+      - key: ADMIN_PASSWORD
+        sync: false            # you are asked for it when the blueprint is created
+      - key: SITE_NAME
+        value: CodeArena
+      - key: JUDGE_WORKERS
+        value: "2"
