@@ -6,16 +6,30 @@ import { db } from './db.js';
 import { JudgePool } from './judge/worker.js';
 import { purgeExpiredSessions } from './middleware/auth.js';
 import { syncAll } from './services/archive/index.js';
-import { hashPassword } from './util/security.js';
+import { hashPassword, verifyPassword } from './util/security.js';
 
-// Bootstrap an admin account from env on first boot (ADMIN_PASSWORD must be set).
-if (config.admin.password && !db.get(`SELECT 1 FROM users WHERE role = 'admin'`)) {
-  db.run(
-    `INSERT INTO users (handle, email, password_hash, role, created_at) VALUES (?, ?, ?, 'admin', ?)
-     ON CONFLICT(handle) DO UPDATE SET role = 'admin'`,
-    config.admin.handle, config.admin.email, hashPassword(config.admin.password), Date.now(),
-  );
-  console.log(`[boot] created admin account '${config.admin.handle}'`);
+// Admin account from env (ADMIN_HANDLE / ADMIN_PASSWORD). The account is created if missing; when the
+// ADMIN_PASSWORD value *changes*, the password is reset once — a salted hash of the applied value is
+// remembered — so the Settings page keeps working afterwards and a lost password can be recovered
+// from the hosting dashboard without shell access.
+if (config.admin.password) {
+  const applied = db.get(`SELECT value FROM meta WHERE key = 'admin_password_env'`)?.value;
+  const user = db.get('SELECT id FROM users WHERE handle = ?', config.admin.handle);
+  if (!user) {
+    db.run(
+      `INSERT INTO users (handle, email, password_hash, role, created_at) VALUES (?, ?, ?, 'admin', ?)`,
+      config.admin.handle, config.admin.email, hashPassword(config.admin.password), Date.now(),
+    );
+    console.log(`[boot] created admin account '${config.admin.handle}'`);
+  } else if (!applied || !verifyPassword(config.admin.password, applied)) {
+    db.run(`UPDATE users SET password_hash = ?, role = 'admin', banned = 0 WHERE id = ?`, hashPassword(config.admin.password), user.id);
+    db.run('DELETE FROM sessions WHERE user_id = ?', user.id);
+    console.log(`[boot] ADMIN_PASSWORD changed: reset the password of '${config.admin.handle}'`);
+  }
+  if (!applied || !verifyPassword(config.admin.password, applied)) {
+    db.run(`INSERT INTO meta (key, value) VALUES ('admin_password_env', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`,
+      hashPassword(config.admin.password));
+  }
 }
 
 if (!db.get(`SELECT 1 FROM users WHERE role = 'admin'`)) {

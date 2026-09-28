@@ -162,7 +162,7 @@ The most important ones:
 |---|---|---|
 | `PORT` / `HOST` | `3000` / `0.0.0.0` | HTTP listener |
 | `DATA_DIR` | `data` | SQLite database and test data |
-| `ADMIN_PASSWORD` | – | creates the first admin on boot if none exists |
+| `ADMIN_PASSWORD` | – | creates the `ADMIN_HANDLE` admin if missing; **changing the value resets that admin's password once** on the next boot (recovery without shell access) |
 | `JUDGE_EMBEDDED` | `true` | run judge workers inside the web process |
 | `JUDGE_WORKERS` | CPUs − 1 (max 4) | parallel judgements per process |
 | `SANDBOX_UID` / `SANDBOX_GID` | – | Linux: base uid for submissions (supervisor must be root) |
