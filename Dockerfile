@@ -35,5 +35,4 @@ ENV NODE_ENV=production \
     TRUST_PROXY=true
 
 EXPOSE 3000
-VOLUME ["/data"]
 CMD ["node", "--disable-warning=ExperimentalWarning", "server/index.js"]
